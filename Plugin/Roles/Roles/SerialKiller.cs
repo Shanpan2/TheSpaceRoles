@@ -12,7 +12,7 @@ namespace TheSpaceRoles
         public SerialKiller()
         {
 
-            teamsSupported = [Teams.Impostor];
+            team = Teams.Impostor;
             Role = Roles.SerialKiller;
             Color = Palette.ImpostorRed;
             HasKillButton = false;
@@ -43,6 +43,7 @@ namespace TheSpaceRoles
                 false);
             Maxtimer = 60f;
             Timer = Maxtimer;
+            Logger.Info("button:SerialKillerButton");
 
         }
         public override void Update()
@@ -57,7 +58,7 @@ namespace TheSpaceRoles
                 }
 
             }
-            SerialKillerKillButton.AddtionalText.text = Translation.GetString("role.serialkiller.timer_remain", [((int)Timer).ToString()]);
+            SerialKillerKillButton.AdditionalText.text = Translation.GetString("role.serialkiller.timer_remain", [((int)Timer).ToString()]);
 
         }
     }

@@ -1,4 +1,5 @@
 ﻿using BepInEx.Configuration;
+using HarmonyLib;
 using Il2CppInterop.Runtime;
 using System;
 using System.Collections.Generic;
@@ -36,9 +37,29 @@ namespace TheSpaceRoles
     }
     public static class Helper
     {
+        public static string Joinsep(this IEnumerable<object> list, string separator)
+        {
+            return string.Join(separator, list);
+        }
+        public static string Joinsep(this List<object> list, string separator)
+        {
+            return string.Join(separator, list);
+        }
+        public static string Joinsep(this object[] list, string separator)
+        {
+            return string.Join(separator, list);
+        }
         public static Roles GetRole(this PlayerControl p)
         {
             return DataBase.AllPlayerRoles[p.PlayerId][0].Role;
+        }
+        public static void Init(this PlayerControl p)
+        {
+            DataBase.AllPlayerRoles[p.PlayerId].Do(x => x.Init());
+        }
+        public static void ButtonResetStart(this PlayerControl p)
+        {
+            DataBase.AllPlayerRoles[p.PlayerId].Do(x => x.ResetStart());
         }
         public static List<Roles> GetRoles(this PlayerControl p)
         {
@@ -58,7 +79,7 @@ namespace TheSpaceRoles
         }
         public static bool IsTeam(this PlayerControl p, Teams team)
         {
-            return DataBase.AllPlayerRoles[p.PlayerId].Any(x => x.Team.Team == team);
+            return DataBase.AllPlayerRoles[p.PlayerId].Any(x => x.CustomTeam.Team == team);
         }
         public static bool InArea(Vector3 Position, Vector3 startPos, Vector3 endPos)
         {
@@ -143,12 +164,14 @@ namespace TheSpaceRoles
         {
             return "<color=#" + ColorUtility.ToHtmlStringRGB(color) + ">" + text + "</color>";
         }
-
+        public static System.Random r = new System.Random((int)Environment.TickCount);
         public static int Random(int a, int b)
         {
-
-            System.Random r = new System.Random();
             return r.Next(a, b + 1);
+        }
+        public static int RandomNext(int b)
+        {
+            return r.Next(b);
         }
         public static void AllAddChat(string Chat, ChatController __instance, string chpname = null)
         {

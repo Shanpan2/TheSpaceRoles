@@ -16,7 +16,7 @@ namespace TheSpaceRoles
             if (__instance.gameObject.active == false) return;
             var player = KillButtonSetTarget(
                 GameOptionsManager.Instance.currentNormalGameOptions.KillDistance,
-                GetLink.ColorFromTeams(Teams.Impostor), notIncludeTeamIds: [Teams.Impostor]);
+                RoleData.GetColorFromTeams(Teams.Impostor), notIncludeTeamIds: [Teams.Impostor]);
             if (player != -1)
             {
                 __instance.currentTarget = DataBase.AllPlayerControls().First(x => x.PlayerId == player);
@@ -39,7 +39,7 @@ namespace TheSpaceRoles
         public static int KillButtonSetTarget(float targetdistance, Color color, Teams[] notIncludeTeamIds = null, int[] notIncludeIds = null, int target = -1, bool canBeTargetInVentPlayer = false, int[] IncludeIds = null)
         {
             var nIids = notIncludeIds?.ToList() ?? [];
-            nIids.AddRange(DataBase.AllPlayerRoles.Where(x => x.Value.Any(y => y.Role == Roles.Mini)).Select(x => x.Key).ToList());
+            nIids.AddRange(DataBase.AllPlayerRoles.Where(x => x.Value.Any(y => y.Role == Roles.NiceMini)).Select(x => x.Key).ToList());
 
 
             if (IncludeIds != null)

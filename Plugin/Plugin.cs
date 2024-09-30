@@ -16,7 +16,7 @@ public class TSR : BasePlugin
     public const string c_name = $"<color=#87cefa>{name}";
     public const string cs_name_v = $"<color=#87cefa>{s_name} <color=#5ccbff><size=100%>v{version}";
     public const string c_name_v = $"<color=#87cefa>{name} <color=#5ccbff><size=100%>v{version}";
-    public const string version = "0.2.1-beta.1";
+    public const string version = "0.3.1-beta";
     internal static BepInEx.Logging.ManualLogSource Logger;
     public Harmony Harmony = new(Id);
     public static TSR Instance;
@@ -26,6 +26,7 @@ public class TSR : BasePlugin
     public override void Load()
     {
         Logger = Log;
+        Instance = this;
         Translation.Load();
         CustomColor.Load();
         Harmony.PatchAll();
@@ -33,12 +34,13 @@ public class TSR : BasePlugin
         TheSpaceRoles.Logger.Info($"Plugin {Id} is loaded!");
         LobbyTimer = Config.Bind("Lobby", "LobbyTimer", true, "ロビータイマーを使うか");
         DebugMode = Config.Bind("Debug", "DebugMode", false, "デバッグモードを使うか");
+        CustomHatManager.LoadHats();
         Instance = new TSR();
     }
 
     /*
-     後でやること
-    playerJoin時に部屋爆破までの時間を伝える。
+    - 後でやること
+    役職設定時バグ治す
      
      
      

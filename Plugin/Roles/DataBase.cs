@@ -1,6 +1,8 @@
-﻿using System;
+﻿using HarmonyLib;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 namespace TheSpaceRoles
 {
@@ -11,6 +13,7 @@ namespace TheSpaceRoles
         /// </summary>
         public static Dictionary<int, CustomRole[]> AllPlayerRoles = [];//playerId,roles
 
+        public static List<Roles> AssignedRoles = [];
         /// <summary>
         /// playerId,Teams型で陣営型を入れれる
         /// </summary>
@@ -20,7 +23,7 @@ namespace TheSpaceRoles
         public static List<CustomButton> buttons = [];
         public static PlayerControl[] AllPlayerControls()
         {
-            return PlayerControl.AllPlayerControls.ToArray().Where(x => !x.isDummy).ToArray();
+            return PlayerControl.AllPlayerControls.ToArray();
         }
         /// <summary>
         /// VoteAreaのすべてのプレイヤー
@@ -115,22 +118,29 @@ namespace TheSpaceRoles
 
         public static void ResetAndPrepare()
         {
+            AssignedRoles.Clear();
             AllPlayerTeams.Clear();
             AllPlayerRoles.Clear();
             AllPlayerDeathReasons.Clear();
-            //buttons.Do(x => GameObject.Destroy(x.actionButton));
+            buttons.ToArray().Do(x => { try { GameObject.Destroy(x.actionButton); } catch { } });
             buttons.Clear();
 
             ButtonsPositionSetter();
             HudManagerGame.IsGameStarting = false;
 
             HudManagerGame.OnGameStarted = true;
+            Logger.Info("DataBaseReseted");
 
+        }
+        public static void ResetButtons()
+        {
+
+            buttons.ToArray().Do(x => { try { GameObject.Destroy(x.actionButton.gameObject); } catch { } });
+            buttons.Clear();
         }
 
         public static Dictionary<Teams, int> GetPlayerCountInTeam()
         {
-
 
             Dictionary<Teams, int> result = [];
 
@@ -142,9 +152,10 @@ namespace TheSpaceRoles
             {
                 if (p.Value.Any(x => !x.Dead))
                 {
-                    result[p.Value[0].Team.Team]++;
+                    result[p.Value[0].CustomTeam.Team]++;
                 }
             }
+            //Logger.Info($"Impostor :{result[Teams.Impostor]},Crewmate :{GetAsCrewmatePlayerCount()}");
             return result;
         }
         /// <summary>
@@ -156,7 +167,8 @@ namespace TheSpaceRoles
             int i = 0;
             foreach (var p in AllPlayerRoles)
             {
-                if (p.Value.Any(x => !x.Dead) && p.Value[0].Role != Roles.Impostor && p.Value[0].Role != Roles.Jackal)
+                //Logger.Info(p.Value[0].Role.ToString());
+                if (p.Value.Any(x => !x.Dead) && p.Value[0].team != Teams.Impostor && p.Value[0].team != Teams.Jackal)
                 {
                     i++;
                 }

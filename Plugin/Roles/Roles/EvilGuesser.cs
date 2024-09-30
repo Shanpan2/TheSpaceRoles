@@ -4,14 +4,15 @@ using UnityEngine;
 
 namespace TheSpaceRoles
 {
-    public class Guesser : CustomRole
+    public class EvilGuesser : CustomRole
     {
         public List<Target> targets = [];
-        public Guesser()
+        public EvilGuesser()
         {
-            teamsSupported = GetLink.GetAllTeams();
-            Role = Roles.Guesser;
-            Color = Helper.ColorFromColorcode("#FFCC00");
+            team = Teams.Impostor;
+            Role = Roles.EvilGuesser;
+            Color = RoleData.GetColorFromTeams(Teams.Impostor);
+            HasKillButton = true;
         }
         public override void HudManagerStart(HudManager hudManager)
         {
@@ -82,6 +83,11 @@ namespace TheSpaceRoles
             bc.material = basecolor.material;
             bc.color = basecolor.color;
             bc.size = basecolor.size;
+
+            foreach (var role in DataBase.AssignedRoles)
+            {
+
+            }
         }
 
         public class Target

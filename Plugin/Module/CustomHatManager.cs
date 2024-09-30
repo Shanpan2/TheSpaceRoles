@@ -11,41 +11,41 @@ namespace TheSpaceRoles
 {
     public static class CustomHatManager
     {
-        public const string ResourcesDirectory = "TheOtherHats";
+        public const string ResourcesDirectory = "TheSpaceHats";
         public const string InnerslothPackageName = "Innersloth Hats";
         public const string DeveloperPackageName = "Developer Hats";
-        internal static readonly Tuple<string, string> Repository = new("supeshio", "TheSpaceRoles");
+        internal static readonly Tuple<string, string> Repository = new("supeshio", "TheSpaceHats");
         internal static string RepositoryUrl
         {
             get
             {
                 var (owner, repository) = Repository;
-                return $"https://raw.githubusercontent.com/{owner}/{repository}/master";
+                return $"https://raw.githubusercontent.com/{owner}/{repository}/main";
             }
         }
-
+        internal static readonly string LoadHatjson = "LoadHats.json";
         internal static readonly string ManifestFileName = "CustomHats.json";
 
         internal static string CustomSkinsDirectory => Path.Combine(Path.GetDirectoryName(Application.dataPath)!, ResourcesDirectory);
         internal static string HatsDirectory => CustomSkinsDirectory;
 
-        internal static List<CustomHat> UnregisteredHats = new();
+        internal static List<Tuple<CustomHat, string>> UnregisteredHats = new();
         internal static readonly Dictionary<string, HatViewData> ViewDataCache = new();
         internal static readonly Dictionary<string, HatExtension> ExtensionCache = new();
 
-        //private static readonly HatsLoader Loader;
+        private static readonly HatsLoader Loader;
 
         internal static HatExtension TestExtension { get; private set; }
 
         static CustomHatManager()
         {
-            //Loader = TSR.Instance.AddComponent<HatsLoader>();
+            Loader = TSR.Instance.AddComponent<HatsLoader>();
         }
 
-        /*internal static void LoadHats()
+        internal static void LoadHats()
         {
             Loader.FetchHats();
-        }*/
+        }
 
         internal static bool TryGetCached(this HatParent hatParent, out HatViewData asset)
         {
@@ -137,8 +137,8 @@ namespace TheSpaceRoles
         {
             var texture = Sprites.LoadTextureFromDisk(Path.Combine(HatsDirectory, path));
             if (texture == null)
-                texture = Sprites.LoadTextureFromResources(path);
-            if (texture == null) return null;
+                //texture = Sprites.LoadTextureFromDisk();
+                if (texture == null) return null;
             var sprite = Sprite.Create(texture,
                 new Rect(0, 0, texture.width, texture.height),
                 new Vector2(0.53f, 0.575f),
@@ -214,7 +214,7 @@ namespace TheSpaceRoles
             return hats;
         }
 
-        internal static List<CustomHat> SanitizeHats(SkinsConfigFile response)
+        internal static List<Tuple<CustomHat, string>> SanitizeHats(SkinsConfigFile response, string url = "")
         {
             foreach (var hat in response.Hats)
             {
@@ -225,7 +225,7 @@ namespace TheSpaceRoles
                 hat.BackFlipResource = SanitizeFileName(hat.BackFlipResource);
             }
 
-            return response.Hats;
+            return response.Hats.Select(x => (x, url).ToTuple()).ToList();
         }
 
         private static string SanitizeFileName(string path)
@@ -251,26 +251,26 @@ namespace TheSpaceRoles
             return !resHash.Equals(hash);
         }
 
-        internal static List<string> GenerateDownloadList(List<CustomHat> hats)
+        internal static List<Tuple<string, string>> GenerateDownloadList(List<Tuple<CustomHat, string>> hats)
         {
             var algorithm = MD5.Create();
-            var toDownload = new List<string>();
+            var toDownload = new List<Tuple<string, string>>();
 
             foreach (var hat in hats)
             {
                 var files = new List<Tuple<string, string>>
             {
-                new(hat.Resource, hat.ResHashA),
-                new(hat.BackResource, hat.ResHashB),
-                new(hat.ClimbResource, hat.ResHashC),
-                new(hat.FlipResource, hat.ResHashF),
-                new(hat.BackFlipResource, hat.ResHashBf)
+                new(hat.Item1.Resource, hat.Item1.ResHashA),
+                new(hat.Item1.BackResource, hat.Item1.ResHashB),
+                new(hat.Item1.ClimbResource, hat.Item1.ResHashC),
+                new(hat.Item1.FlipResource, hat.Item1.ResHashF),
+                new(hat.Item1.BackFlipResource, hat.Item1.ResHashBf)
             };
                 foreach (var (fileName, fileHash) in files)
                 {
                     if (fileName != null && ResourceRequireDownload(fileName, fileHash, algorithm))
                     {
-                        toDownload.Add(fileName);
+                        toDownload.Add((fileName, hat.Item2).ToTuple());
                     }
                 }
             }
@@ -278,7 +278,7 @@ namespace TheSpaceRoles
             return toDownload;
         }
 
-        public static List<CustomHat> loadHorseHats()
+        public static List<Tuple<CustomHat, string>> loadHorseHats(string url)
         {
             List<CustomHat> hatdatas = new();
             Assembly assembly = Assembly.GetExecutingAssembly();
@@ -316,7 +316,7 @@ namespace TheSpaceRoles
                     continue;
                 hatdatas.Add(info);
             }
-            return hatdatas;
+            return hatdatas.Select(x => (x, url).ToTuple()).ToList();
         }
     }
 }

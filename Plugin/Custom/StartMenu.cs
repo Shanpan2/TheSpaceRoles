@@ -34,7 +34,7 @@ namespace TheSpaceRoles
         {
 
             __instance.text.text += $"\n{TSR.c_name_v}";
-            __instance.text.alignment = TextAlignmentOptions.Top ;
+            __instance.text.alignment = TextAlignmentOptions.Top;
         }
     }
     [HarmonyPatch(typeof(HudManager), nameof(HudManager.Start))]
@@ -43,6 +43,10 @@ namespace TheSpaceRoles
         public static void Postfix(HudManager __instance)
         {
             Data.textMaterial = __instance.Chat.quickChatMenu.timer.text.fontMaterial;
+            if (CustomOption.options.Count == 0)
+            {
+                CustomOptionsHolder.CreateCustomOptions();
+            }
         }
     }
     [HarmonyPatch(typeof(MainMenuManager), nameof(MainMenuManager.Start))]
