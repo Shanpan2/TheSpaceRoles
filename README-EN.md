@@ -4,6 +4,9 @@
 This mod is not affiliated with Among Us or Innersloth LLC,
 and the content contained therein is not endorsed or otherwise sponsored by Innersloth LLC. Portions of the materials contained herein are property of Innersloth LLC. © Innersloth LLC.
 
+## Discord
+[TSR公式Discordサーバー](https://discord.gg/PUF4bJDmwx)<br>
+
 ## README In Other Language
  [日本語](https://github.com/supeshio/TheSpaceRoles/blob/main/README.md)<br>
 →[English](https://github.com/supeshio/TheSpaceRoles/blob/main/README-EN.md)<br>
